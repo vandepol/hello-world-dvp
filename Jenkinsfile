@@ -225,14 +225,20 @@ spec:
                     PORT='80'
 
                     # sleep for 10 seconds to allow enough time for the server to start
-                    sleep 60
+                    sleep 30
 
                     if [ $(curl -sL -w "%{http_code}\\n" "http://${INGRESS_HOST}:${PORT}/health" -o /dev/null --connect-timeout 3 --max-time 5 --retry 3 --retry-max-time 30) == "200" ]; then
                         echo "Successfully reached health endpoint: http://${INGRESS_HOST}:${PORT}/health"
-                    echo "====================================================================="
+                        echo "====================================================================="
+                    else
+                        echo "Could not reach health endpoint: http://${INGRESS_HOST}:${PORT}/health"
+                        if [ $(curl -sL -w "%{http_code}\\n" "http://${INGRESS_HOST}:${PORT}/health" -o /dev/null --connect-timeout 3 --max-time 5 --retry 3 --retry-max-time 30) == "200" ]; then
+                            echo "Successfully reached health endpoint: http://${INGRESS_HOST}:${PORT}/health"
+                            echo "====================================================================="
                         else
-                    echo "Could not reach health endpoint: http://${INGRESS_HOST}:${PORT}/health"
-                        exit 1;
+                            echo "Could not reach health endpoint: http://${INGRESS_HOST}:${PORT}/health"
+                            exit 1;
+                        fi;
                     fi;
 
                 '''
